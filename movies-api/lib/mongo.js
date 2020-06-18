@@ -46,7 +46,9 @@ class MongoLib {
     create(collection, data){
         return this.connect().then(db => {
             return db.collection(collection).insertOne(data)
-        }).then(result => result.id)
+        }).then(result => {
+            return result.ops[0]
+        })
     }
 
     update(collection, id, data){

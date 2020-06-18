@@ -1,5 +1,7 @@
 const express = require('express');
 const MoviesService = require('../services/movies');
+const validationHandler = require('../utils/middleware/validationHandler');
+const { movieIdSchema, createMovieSchema, updateMovieSchema } = require('../utils/models/movies');
 
 function moviesApi(app) {
     const ruoter = express.Router();
@@ -20,7 +22,7 @@ function moviesApi(app) {
         }
     })
 
-    ruoter.get('/:movieId', async (req, res, next) => {
+    ruoter.get('/:movieId', validationHandler({movieId: movieIdSchema}, 'params') ,async (req, res, next) => {
         const {movieId} = req.params
         try {
             const movies = await moviesServices.getMovie({movieId})
@@ -33,7 +35,7 @@ function moviesApi(app) {
         }
     })
 
-    ruoter.post('/', async (req, res, next) => {
+    ruoter.post('/', validationHandler(createMovieSchema) ,async (req, res, next) => {
         const {body: movie}  = req
         try {
             const createdMovieId = await moviesServices.createMovie({movie})
@@ -46,7 +48,7 @@ function moviesApi(app) {
         }
     })
 
-    ruoter.put('/:movieId', async (req, res, next) => {
+    ruoter.put('/:movieId', validationHandler({movieId: movieIdSchema}, 'params'), validationHandler(updateMovieSchema),  async (req, res, next) => {
         const {movieId} = req.params
         const {body: movie}  = req
         
@@ -61,7 +63,7 @@ function moviesApi(app) {
         }
     })
 
-    ruoter.delete('/:movieId', async (req, res, next) => {
+    ruoter.delete('/:movieId', validationHandler({movieId: movieIdSchema}, 'params'), async (req, res, next) => {
         const {movieId} = req.params
 
         try {
